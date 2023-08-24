@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -11,6 +12,21 @@ struct Record
     int ciclo;
 
     long left, right;
+
+    void setData() {
+        cout << "Codigo:";
+        cin >> cod;
+        cout << "Nombre: ";
+        cin >> nombre;
+        cout << "Ciclo: ";
+        cin >> ciclo;
+    }
+
+    void showData() {
+        cout << "\nCodigo: " << cod;
+        cout << "\nNombre: " << nombre;
+        cout << "\nCiclo : " << ciclo <<endl;
+    }
 };
 
 class AVLFile
@@ -42,16 +58,35 @@ public:
 
 private:
     Record find(long pos_node, int key){
-        /*
-        if (node == nullptr)
-            return false;
-        else if (value < node->data)
-            return find(node->left, value);
-        else if (value > node->data)
-            return find(node->right, value);
-        else
-            return true;
-        */
+        ifstream file(filename, ios::binary);
+        if (!file)
+        {
+            cerr << "Error" << endl;
+        }
+
+        file.seekg(pos_node);
+        Record node;
+        file.read(reinterpret_cast<char *>(&node), sizeof(Record));
+
+        if (node.cod == key)
+        {
+            file.close();
+            return node;
+        }
+        else if (key < node.cod && node.left != -1)
+        {
+            file.close();
+            return find(node.left, key);
+        }
+        else if (key > node.cod && node.right != -1)
+        {
+            file.close();
+            return find(node.right, key);
+        }
+        else {
+            file.close();
+
+        }
     }
 
     void insert(long pos_node, Record record){
