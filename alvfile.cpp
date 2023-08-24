@@ -76,12 +76,34 @@ private:
         }
     }
     vector<Record> inorder(long pos_node){
-        /*
-        if (node == nullptr)
-            return;
-        displayPreOrder(node->left);
-        cout << node->data << endl;
-        displayPreOrder(node->right);
-        */
-    }
+
+        ifstream file(filename, ios::binary);
+        if (!file.is_open()) throw ("No se pudo abrir el archivo");
+
+        vector<Record> result;
+        if (pos_node == 0) {
+            file.close();
+            return result;
+        }
+
+        file.seekg(pos_node, ios::beg);
+        Record node;
+        file.read((char*)&node, sizeof(Record));
+        file.close();
+
+        if (node.cod == -1) {
+            return result;
+        }
+
+        vector<Record> leftSubtree = inorder(node.left);
+        result.insert(result.end(), leftSubtree.begin(), leftSubtree.end());
+
+        result.push_back(node);
+
+        vector<Record> rightSubtree = inorder(node.right);
+        result.insert(result.end(), rightSubtree.begin(), rightSubtree.end());
+
+        return result;
+
+        }
 };
